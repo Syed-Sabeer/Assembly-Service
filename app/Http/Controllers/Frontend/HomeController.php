@@ -29,7 +29,9 @@ public function index()
 {
     $partners = Partner::where('visibility', 1)->get();
     $faqs = Faq::all();
+
     $about_details = AboutSection::first();
+    $home_details = HomeHeroSection::first();
     $blogs = Blog::latest()->take(3)->get();
     $heros = HeroCrud::all();
     $services = Service::all();
@@ -39,7 +41,7 @@ public function index()
     // Load categories *with* their related products
     $categories = Category::with('products')->get();
 
-    return view('frontend.index', compact('faqs', 'partners', 'testimonials', 'blogs', 'heros', 'categories','about_details','projects','services'));
+    return view('frontend.index', compact('faqs', 'home_details','partners', 'testimonials', 'blogs', 'heros', 'categories','about_details','projects','services'));
 }
 
 

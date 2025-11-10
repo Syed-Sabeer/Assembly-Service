@@ -547,31 +547,39 @@
 							<!-- Sec Title -->
 							<div class="sec-title title-anim mb-4">
 								<div class="sec-title_title">Assembly Services Team</div>
-								<h2 class="sec-title_heading">Join the Assembly Services Team</h2>
-								<div class="sec-title_text">Are you skilled in assembling swing sets, fitness equipment,
-									or basketball goals? Assembly Services is looking for reliable, hands-on technicians
-									to join our growing network. As part of our team, you'll handle installation
-									services booked through our platform, giving customers peace of mind and
-									professional results.</div>
+								<h2 class="sec-title_heading">{{ $home_details->heading }}</h2>
+								<div class="sec-title_text">{!! $home_details->description !!}</div>
 							</div>
-							<p><b>By creating a technician profile, you’ll be able to:</b></p>
+							<!-- <p><b>By creating a technician profile, you’ll be able to:</b></p> -->
 							<ul class="fluid-one_list">
-								<li><i class="fa-classic fa-solid fa-circle-check fa-fw"></i>Accept job requests based
-									on your availability</li>
-								<li><i class="fa-classic fa-solid fa-circle-check fa-fw"></i>Get matched with customers
-									in your area</li>
-								<li><i class="fa-classic fa-solid fa-circle-check fa-fw"></i>Receive payments securely
-									and quickly</li>
+@php
+    $points = is_array($home_details->points) 
+        ? $home_details->points 
+        : json_decode($home_details->points, true);
+@endphp
+
+@if(!empty($points))
+    <ul class="fluid-one_list">
+        @foreach($points as $point)
+            <li>
+                <i class="fa-classic fa-solid fa-circle-check fa-fw"></i>
+                {{ $point }}
+            </li>
+        @endforeach
+    </ul>
+@endif
+
+
 							</ul>
 							<div class="d-flex justify-content-between flex-wrap">
-								<div class="fluid-one_experiance">10<sup>+</sup><span>Experiance</span></div>
+								<div class="fluid-one_experiance">{{ $home_details->experience }}<sup>+</sup><span>Experience</span></div>
 								<div class="fluid-one_author">
 									<div class="fluid-one_author-inner">
 										<div class="fluid-one_author-image">
 											<img src="{{asset('FrontendAssets/images/resource/author-1.png')}}" alt="" />
 										</div>
-										John Smith
-										<span>CEO & Founder</span>
+										{{ $home_details->name }}
+										<span>{{ $home_details->designation }}</span>
 									</div>
 								</div>
 							</div>
@@ -580,7 +588,7 @@
 								<div class="fluid-one_author">
 									<img src="{{asset('FrontendAssets/images/resource/author-2.png')}}" alt="" />
 								</div>
-								<div class="fluid-one_video-text">Join Our Team of Assembly Experts</div>
+								<div class="fluid-one_video-text">{{ $home_details->badge }}</div>
 								
 							</div>
 
