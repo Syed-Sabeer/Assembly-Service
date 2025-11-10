@@ -42,10 +42,10 @@
 								<div class="service-block_three-icon">
 									<img src="{{asset($service->image)}}" alt="" />
 								</div>
-								<h4 class="service-block_three-heading"><a href="/service-details">{{ $service->heading }}</a></h4>
+								<h4 class="service-block_three-heading"><a href="{{ route('service.detail', $service->slug ?? $service->id) }}">{{ $service->heading }}</a></h4>
 							</div>
 							<div class="service-block_three-text" style="color:#ffff;">{!! $service->description !!}</div>
-							<a href="/service-details" class="service-block_three-more">
+							<a href="{{ route('service.detail', $service->slug ?? $service->id) }}" class="service-block_three-more">
 								Get Started <i class="fa-classic fa-solid fa-arrow-right fa-fw"></i>
 							</a>
 						</div>
@@ -410,7 +410,7 @@
             
             <!-- Button Box -->
             <div class="service-one_button">
-                <a href="{{ $service->link ?? 'javascript:;' }}" class="theme-btn btn-style-three">
+                <a href="{{ route('service.detail', $service->slug ?? $service->id) }}" class="theme-btn btn-style-three">
                     <span class="btn-wrap">
                         <span class="text-one">
                             Discover More 

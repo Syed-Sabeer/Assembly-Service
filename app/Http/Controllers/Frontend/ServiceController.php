@@ -17,5 +17,21 @@ class ServiceController extends Controller
         return view("frontend.services", compact('services','achievements'));
     }
 
-
+    public function show($slug){
+        // Try to find by slug first, then by ID if slug doesn't match
+        $service = Service::where('visibility', 1)
+            ->where(function($query) use ($slug) {
+                $query->where('slug', $slug)
+                      ->orWhere('id', $slug);
+            })
+            ->firstOrFail();
+        
+        // Get related services (other services excluding current one)
+        $relatedServices = Service::where('visibility', 1)
+            ->where('id', '!=', $service->id)
+            ->limit(6)
+            ->get();
+        
+        return view("frontend.service-detail", compact('service', 'relatedServices'));
+    }
 }

@@ -105,6 +105,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
+Route::get('/service/{slug}', [ServiceController::class, 'show'])->name('service.detail');
 
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
