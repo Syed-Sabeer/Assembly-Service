@@ -1,40 +1,19 @@
 @extends('layouts.app.master')
 
-@php
-    use App\Helpers\BookingStatusHelper;
-@endphp
-
-@section('title', 'Bookings')
+@section('title', 'Quotes')
 
 @section('css')
 <style>
-    .status-badge {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
+    .file-preview {
         display: inline-block;
-        text-transform: uppercase;
+        margin: 5px;
     }
-    .status-pending {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-    .status-approved {
-        background-color: #d4edda;
-        color: #155724;
-    }
-    .status-rejected {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    .status-on_route {
-        background-color: #cfe2ff;
-        color: #084298;
-    }
-    .status-completed {
-        background-color: #d1e7dd;
-        color: #0f5132;
+    .file-preview img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ddd;
     }
     .stat-card {
         transition: all 0.3s ease;
@@ -77,7 +56,6 @@
     .gradient-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
     .gradient-info { background: linear-gradient(135deg, #3494E6 0%, #EC6EAD 100%); }
     .gradient-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .gradient-danger { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
     .filter-section {
         display: flex;
         justify-content: center;
@@ -93,7 +71,7 @@
         <div class="page-title">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3>Bookings List</h3>
+                    <h3>Quote Requests</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb">
@@ -101,8 +79,8 @@
                             <svg class="stroke-icon">
                                 <use href="{{asset('AdminAssets/svg/icon-sprite.svg#stroke-home')}}"></use>
                             </svg></a></li>
-                        <li class="breadcrumb-item">Bookings</li>
-                        <li class="breadcrumb-item active">List</li>
+                        <li class="breadcrumb-item">Submissions</li>
+                        <li class="breadcrumb-item active">Quote Requests</li>
                     </ol>
                 </div>
             </div>
@@ -112,7 +90,7 @@
     <div class="container-fluid list-product-view product-wrapper">
         <!-- Statistics Cards Row -->
         <div class="row mb-4">
-            <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="col-xl-3 col-md-6 col-sm-6">
                 <div class="card stat-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
@@ -121,82 +99,52 @@
                                 <div class="stat-value">{{ $stats['total'] }}</div>
                             </div>
                             <div class="stat-icon gradient-primary">
-                                <i class="fa fa-calendar-check"></i>
+                                <i class="fa fa-file-alt"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="col-xl-3 col-md-6 col-sm-6">
                 <div class="card stat-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="stat-label">Pending</div>
-                                <div class="stat-value">{{ $stats['pending'] }}</div>
-                            </div>
-                            <div class="stat-icon gradient-warning">
-                                <i class="fa fa-clock"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2 col-md-4 col-sm-6">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="stat-label">Approved</div>
-                                <div class="stat-value">{{ $stats['approved'] }}</div>
-                            </div>
-                            <div class="stat-icon gradient-success">
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2 col-md-4 col-sm-6">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="stat-label">On Route</div>
-                                <div class="stat-value">{{ $stats['on_route'] }}</div>
+                                <div class="stat-label">Today</div>
+                                <div class="stat-value">{{ $stats['today'] }}</div>
                             </div>
                             <div class="stat-icon gradient-info">
-                                <i class="fa fa-route"></i>
+                                <i class="fa fa-calendar-day"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="col-xl-3 col-md-6 col-sm-6">
                 <div class="card stat-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="stat-label">Completed</div>
-                                <div class="stat-value">{{ $stats['completed'] }}</div>
+                                <div class="stat-label">This Week</div>
+                                <div class="stat-value">{{ $stats['this_week'] }}</div>
                             </div>
                             <div class="stat-icon gradient-success">
-                                <i class="fa fa-check-double"></i>
+                                <i class="fa fa-calendar-week"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="col-xl-3 col-md-6 col-sm-6">
                 <div class="card stat-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="stat-label">Rejected</div>
-                                <div class="stat-value">{{ $stats['rejected'] }}</div>
+                                <div class="stat-label">This Month</div>
+                                <div class="stat-value">{{ $stats['this_month'] }}</div>
                             </div>
-                            <div class="stat-icon gradient-danger">
-                                <i class="fa fa-times-circle"></i>
+                            <div class="stat-icon gradient-warning">
+                                <i class="fa fa-calendar"></i>
                             </div>
                         </div>
                     </div>
@@ -206,20 +154,12 @@
 
         <!-- Filter Section -->
         <div class="filter-section">
-            <form method="GET" action="{{ route('admin.bookings.index') }}" class="d-inline-flex gap-2 align-items-center">
+            <form method="GET" action="{{ route('admin.quotes.index') }}" class="d-inline-flex gap-2 align-items-center">
                 <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ $search }}" style="width: 200px;">
-                <select name="status" class="form-control" style="width: 150px;">
-                    <option value="">All Status</option>
-                    <option value="pending" {{ $statusFilter == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="approved" {{ $statusFilter == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="on_route" {{ $statusFilter == 'on_route' ? 'selected' : '' }}>On Route</option>
-                    <option value="completed" {{ $statusFilter == 'completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="rejected" {{ $statusFilter == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                </select>
                 <input type="date" name="date_from" class="form-control" value="{{ $dateFrom }}" placeholder="From">
                 <input type="date" name="date_to" class="form-control" value="{{ $dateTo }}" placeholder="To">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary"><i class="fa fa-redo"></i></a>
+                <a href="{{ route('admin.quotes.index') }}" class="btn btn-secondary"><i class="fa fa-redo"></i></a>
             </form>
         </div>
 
@@ -227,7 +167,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header card-no-border">
-                        <h5>All Bookings</h5>
+                        <h5>All Quote Requests</h5>
                     </div>
                     <div class="card-body px-0 pt-0">
                         <div class="list-product">
@@ -237,66 +177,73 @@
                                         <tr>
                                             <th></th>
                                             <th>No.</th>
-                                            <th><span class="c-o-light f-w-600">Booking ID</span></th>
-                                            <th><span class="c-o-light f-w-600">Customer</span></th>
-                                            <th><span class="c-o-light f-w-600">Product</span></th>
-                                            <th><span class="c-o-light f-w-600">Address</span></th>
-                                            <th><span class="c-o-light f-w-600">Amount</span></th>
-                                            <th><span class="c-o-light f-w-600">Status</span></th>
+                                            <th><span class="c-o-light f-w-600">Name</span></th>
+                                            <th><span class="c-o-light f-w-600">Email</span></th>
+                                            <th><span class="c-o-light f-w-600">Phone</span></th>
+                                            <th><span class="c-o-light f-w-600">Service</span></th>
+                                            <th><span class="c-o-light f-w-600">City</span></th>
+                                            <th><span class="c-o-light f-w-600">Files</span></th>
                                             <th><span class="c-o-light f-w-600">Date</span></th>
                                             <th><span class="c-o-light f-w-600">Actions</span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse($paginatedBookings as $item)
-                                        @php
-                                            $booking = $item['booking'];
-                                            $status = $item['status'];
-                                            $statusLabel = $item['statusLabel'];
-                                        @endphp
+                                        @forelse($quotes as $quote)
                                         <tr class="product-removes">
                                             <td></td>
-                                            <td>{{ $loop->iteration + ($paginatedBookings->currentPage() - 1) * $paginatedBookings->perPage() }}</td>
+                                            <td>{{ $loop->iteration + ($quotes->currentPage() - 1) * $quotes->perPage() }}</td>
                                             <td>
-                                                <p class="c-o-light mb-0"><strong>#{{ $booking->id }}</strong></p>
+                                                <p class="c-o-light mb-0">{{ $quote->fullname }}</p>
                                             </td>
                                             <td>
-                                                <p class="c-o-light mb-0">{{ $booking->user->name ?? 'N/A' }}</p>
-                                                <small class="text-muted">{{ $booking->user->email ?? 'N/A' }}</small>
+                                                <p class="c-o-light mb-0">{{ $quote->email }}</p>
                                             </td>
                                             <td>
-                                                <p class="c-o-light mb-0">{{ $booking->product->title ?? 'N/A' }}</p>
+                                                <p class="c-o-light mb-0">{{ $quote->phone }}</p>
                                             </td>
                                             <td>
-                                                <p class="c-o-light mb-0">{{ Str::limit($booking->installation_address ?? 'N/A', 30) }}</p>
-                                                <small class="text-muted">{{ $booking->city ?? 'N/A' }}, {{ $booking->zip ?? 'N/A' }}</small>
+                                                <p class="c-o-light mb-0">{{ $quote->service }}</p>
                                             </td>
                                             <td>
-                                                <p class="c-o-light mb-0"><strong>${{ number_format($booking->amount ?? 0, 2) }}</strong></p>
+                                                <p class="c-o-light mb-0">{{ $quote->city }}</p>
                                             </td>
                                             <td>
-                                                <span class="status-badge status-{{ $status ?? 'pending' }}">
-                                                    {{ ucfirst($statusLabel ?? 'Pending') }}
-                                                </span>
+                                                @if($quote->file)
+                                                    @php
+                                                        $files = json_decode($quote->file, true);
+                                                    @endphp
+                                                    @if(is_array($files) && count($files) > 0)
+                                                        <span class="badge bg-info">{{ count($files) }} file(s)</span>
+                                                    @else
+                                                        <span class="text-muted">No files</span>
+                                                    @endif
+                                                @else
+                                                    <span class="text-muted">No files</span>
+                                                @endif
                                             </td>
                                             <td>
-                                                <p class="c-o-light mb-0">{{ $booking->created_at->format('M d, Y') }}</p>
-                                                <small class="text-muted">{{ $booking->created_at->format('h:i A') }}</small>
+                                                <p class="c-o-light mb-0">{{ $quote->created_at->format('M d, Y') }}</p>
+                                                <small class="text-muted">{{ $quote->created_at->format('h:i A') }}</small>
                                             </td>
                                             <td>
                                                 <div class="product-action">
-                                                    <a class="square-white" href="{{ route('admin.bookings.show', $booking->id) }}" title="View Details">
+                                                    <a class="square-white" href="{{ route('admin.quotes.show', $quote->id) }}" title="View Details">
                                                         <svg>
                                                             <use href="{{ asset('AdminAssets/svg/icon-sprite.svg#eye') }}"></use>
                                                         </svg>
                                                     </a>
+                                                    <button type="button" class="square-white trash-3" onclick="deleteQuote({{ $quote->id }})" title="Delete">
+                                                        <svg>
+                                                            <use href="{{ asset('AdminAssets/svg/icon-sprite.svg#trash1') }}"></use>
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
                                         @empty
                                         <tr>
                                             <td colspan="10" class="text-center py-5">
-                                                <p class="text-muted">No bookings found.</p>
+                                                <p class="text-muted">No quote requests found.</p>
                                             </td>
                                         </tr>
                                         @endforelse
@@ -307,10 +254,10 @@
                         <div class="card-footer">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    Showing {{ $paginatedBookings->firstItem() ?? 0 }} to {{ $paginatedBookings->lastItem() ?? 0 }} of {{ $paginatedBookings->total() }} entries
+                                    Showing {{ $quotes->firstItem() ?? 0 }} to {{ $quotes->lastItem() ?? 0 }} of {{ $quotes->total() }} entries
                                 </div>
                                 <div>
-                                    {{ $paginatedBookings->links() }}
+                                    {{ $quotes->links() }}
                                 </div>
                             </div>
                         </div>
@@ -324,5 +271,44 @@
 @endsection
 
 @section('script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function deleteQuote(id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/quotes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Deleted!', data.message || 'Quote has been deleted.', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error!', data.message || 'Failed to delete quote.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'An error occurred while deleting the quote.', 'error');
+            });
+        }
+    });
+}
+</script>
 @endsection
 

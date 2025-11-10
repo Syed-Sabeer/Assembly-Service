@@ -12,12 +12,12 @@ class AdminCategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return view('admin.crud.category.index', compact('categories'));
+        return view('crud.category.index', compact('categories'));
     }
 
     public function add()
     {
-        return view('admin.crud.category.add');
+        return view('crud.category.add');
     }
 
     public function store(Request $request)
@@ -44,7 +44,7 @@ class AdminCategoryController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('admin.crud.category.edit', compact('category'));
+        return view('crud.category.edit', compact('category'));
     }
 
     public function update(Request $request, $id)

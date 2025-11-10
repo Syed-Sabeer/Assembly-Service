@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -22,11 +23,18 @@ class RegisterController extends Controller
     Log::info('registerAttempt called', ['request' => $request->all()]);
 
     try {
-        $request->validate([
+        $validationRules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-        ]);
+        ];
+        
+        // Add resume validation if technician registration
+        if ($request->has('is_technician')) {
+            $validationRules['resume'] = 'required|file|mimes:pdf,doc,docx|max:10240'; // Max 10MB
+        }
+        
+        $request->validate($validationRules);
     } catch (\Illuminate\Validation\ValidationException $e) {
         Log::error('Validation failed', ['errors' => $e->errors()]);
 
@@ -67,6 +75,24 @@ class RegisterController extends Controller
 
         // ✅ Create technician profile if applicable
         if ($isTechnician) {
+            $resumePath = null;
+            
+            // Handle resume file upload
+            if ($request->hasFile('resume')) {
+                try {
+                    $resumeFile = $request->file('resume');
+                    $resumePath = $resumeFile->store('technician/resumes', 'public');
+                    Log::info('Resume uploaded during registration', [
+                        'user_id' => $user->id,
+                        'path' => $resumePath,
+                        'original_name' => $resumeFile->getClientOriginalName()
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Resume upload error during registration: ' . $e->getMessage());
+                    throw new \Exception('Failed to upload resume. Please try again.');
+                }
+            }
+            
             TechnicianProfile::create([
                 'user_id' => $user->id,
                 'about' => $request->about,
@@ -75,11 +101,11 @@ class RegisterController extends Controller
                 'certification' => $request->certification ?? null,
                 'education' => $request->education ?? null,
                 'projects' => $request->projects ?? null,
-                'resume' => $request->resume ?? null,
+                'resume' => $resumePath,
                 'profile_picture' => $request->profile_picture ?? null,
             ]);
 
-            Log::info('Technician profile created', ['user_id' => $user->id]);
+            Log::info('Technician profile created', ['user_id' => $user->id, 'resume_path' => $resumePath]);
         }
 
         // Assign role to user (NOT to TechnicianProfile)

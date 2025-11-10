@@ -21,7 +21,7 @@ class AdminCustomerController extends Controller
         $search = $request->get('search', '');
         $dateFrom = $request->get('date_from', '');
         $dateTo = $request->get('date_to', '');
-        $perPage = $request->get('per_page', 15);
+        $perPage = $request->get('per_page', 20);
 
         // Start query - get users with individual role
         $query = User::whereHas('roles', function($q) {
@@ -61,7 +61,7 @@ class AdminCustomerController extends Controller
             'total_bookings' => Booking::count(),
         ];
 
-        return view('admin.crud.customers.index', compact('customers', 'stats', 'search', 'dateFrom', 'dateTo', 'perPage'));
+        return view('crud.customers.index', compact('customers', 'stats', 'search', 'dateFrom', 'dateTo', 'perPage'));
     }
 
     /**
@@ -152,7 +152,7 @@ class AdminCustomerController extends Controller
             'reviews_given' => Review::whereIn('booking_id', $bookings->pluck('id'))->count(),
         ];
 
-        return view('admin.crud.customers.show', compact('customer', 'processedBookings', 'customerStats'));
+        return view('crud.customers.show', compact('customer', 'processedBookings', 'customerStats'));
     }
 
     public function store(Request $request)

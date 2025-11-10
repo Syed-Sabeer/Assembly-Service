@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminNewsletterSubmissionController;
 use App\Http\Controllers\Admin\AdminContactPageController;
 use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\Admin\AdminAchievementController;
+use App\Http\Controllers\Admin\AdminQuoteController;
 use App\Http\Controllers\Admin\AdminTestimonialController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProjectController;

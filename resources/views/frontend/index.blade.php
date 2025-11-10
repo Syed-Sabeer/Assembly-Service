@@ -51,7 +51,7 @@
 				<div class="swiper-wrapper">
 
 				@foreach($heros as $hero)
-					<!-- Slide -->
+					<!-- Slide -->  
 					<div class="swiper-slide">
 						<div class="slider-one_image-layer"
 							style="background-image:url({{asset($hero->image)}})"></div>
@@ -446,7 +446,7 @@
 	<section class="service-one">
 			<div class="service-one_shadow"></div>
 			<div class="auto-container">
-				<div class="inner-container">
+				<div class="inner-container py-5">
 					<div class="service-one_pattern-layer"
 						style="background-image:url({{asset('FrontendAssets/images/background/pattern-2.png')}})"></div>
 					<div class="row clearfix">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AdminWebsiteController extends Controller
 {
@@ -28,6 +29,12 @@ class AdminWebsiteController extends Controller
             $request->validate([
                 'heading' => 'nullable|string|max:255',
                 'description' => 'nullable|string',
+                'points' => 'nullable|array',
+                'points.*' => 'nullable|string',
+                'experience' => 'nullable|string|max:255',
+                'name' => 'nullable|string|max:255',
+                'designation' => 'nullable|string',
+                'badge' => 'nullable|string|max:255',
                 'button_link' => 'nullable|string',
                 'song_name' => 'nullable|string',
                 'song_album' => 'nullable|string|max:255',
@@ -43,9 +50,21 @@ class AdminWebsiteController extends Controller
             // Hero Section
             $hero = \App\Models\HomeHeroSection::first();
             
+            // Process points array - filter out empty values
+            $points = $request->input('points', []);
+            $points = array_filter($points, function($point) {
+                return !empty(trim($point));
+            });
+            $points = array_values($points); // Re-index array
+
             $heroData = [
                 'heading' => $request->input('heading') ?: '',
                 'description' => $request->input('description') ?: '',
+                'points' => !empty($points) ? $points : null,
+                'experience' => $request->input('experience') ?: '',
+                'name' => $request->input('name') ?: '',
+                'designation' => $request->input('designation') ?: '',
+                'badge' => $request->input('badge') ?: '',
                 'button_link' => $request->input('button_link') ?: '',
                 'song_name' => $request->input('song_name') ?: '',
                 'song_album' => $request->input('song_album') ?: '',
@@ -107,13 +126,13 @@ class AdminWebsiteController extends Controller
             } else {
                 $hero->update($heroData);
             }
-            \Log::info('Hero section updated successfully', ['hero_id' => $hero->id, 'data' => $heroData]);
+            Log::info('Hero section updated successfully', ['hero_id' => $hero->id, 'data' => $heroData]);
+            
+            return redirect()->route('admin.website.index')->with('success', 'Team section updated successfully!');
         } catch (\Exception $e) {
-            \Log::error('Error updating hero section', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            throw $e;
+            Log::error('Error updating hero section', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->route('admin.website.index')->with('error', 'Failed to update team section: ' . $e->getMessage());
         }
-
-       
     }
 
 

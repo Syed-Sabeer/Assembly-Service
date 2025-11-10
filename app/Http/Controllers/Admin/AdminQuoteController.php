@@ -18,7 +18,7 @@ class AdminQuoteController extends Controller
         $search = $request->get('search', '');
         $dateFrom = $request->get('date_from', '');
         $dateTo = $request->get('date_to', '');
-        $perPage = $request->get('per_page', 15);
+        $perPage = $request->get('per_page', 20);
 
         // Start query
         $query = Quote::query();
@@ -57,7 +57,7 @@ class AdminQuoteController extends Controller
                                 ->count(),
         ];
 
-        return view('admin.crud.quotes.index', compact('quotes', 'stats', 'search', 'dateFrom', 'dateTo', 'perPage'));
+        return view('crud.quotes.index', compact('quotes', 'stats', 'search', 'dateFrom', 'dateTo', 'perPage'));
     }
 
     /**
@@ -84,7 +84,7 @@ class AdminQuoteController extends Controller
             }
         }
         
-        return view('admin.crud.quotes.show', compact('quote', 'files'));
+        return view('crud.quotes.show', compact('quote', 'files'));
     }
 
     /**

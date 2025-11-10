@@ -1,6 +1,9 @@
 (function ($) {
   if (localStorage.getItem("color")) $("#color").attr("href", "../assets/css/" + localStorage.getItem("color") + ".css");
-  if (localStorage.getItem("dark")) $("body").attr("class", "dark-only");
+  if (localStorage.getItem("dark")) {
+    $("body").attr("class", "dark-only");
+    document.documentElement.classList.add("dark-only");
+  }
   
 
   (function () {})();
@@ -62,7 +65,9 @@
       $(".customizer-color.dark li").removeClass("active");
       $(this).addClass("active");
       $("body").attr("class", "dark-only");
+      document.documentElement.classList.add("dark-only");
       localStorage.setItem("dark", "dark-only");
+      // Apply theme immediately without page reload
     });
 
     if (localStorage.getItem("primary") != null) {

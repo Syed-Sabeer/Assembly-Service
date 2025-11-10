@@ -8,16 +8,39 @@ use Illuminate\Http\Request;
 
 class AdminProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->get();
-        return view('admin.crud.products.index', compact('products'));
+        $search = $request->get('search', '');
+        $perPage = $request->get('per_page', 20);
+
+        // Start query
+        $query = Product::query();
+
+        // Apply search filter
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('tag', 'like', "%{$search}%");
+        }
+
+        // Get all products for statistics
+        $allProducts = Product::all();
+        
+        // Calculate statistics
+        $stats = [
+            'total' => $allProducts->count(),
+        ];
+
+        // Paginate results
+        $products = $query->latest()->paginate($perPage);
+
+        return view('crud.products.index', compact('products', 'stats', 'search'));
     }
 
    public function add()
 {
     $categories = \App\Models\Category::all(); 
-    return view('admin.crud.products.add', compact('categories'));
+    return view('crud.products.add', compact('categories'));
 }
 
     public function store(Request $request)
@@ -67,7 +90,7 @@ class AdminProductController extends Controller
 {
     $product = Product::findOrFail($id);
     $categories = \App\Models\Category::all(); 
-    return view('admin.crud.products.edit', compact('product', 'categories'));
+    return view('crud.products.edit', compact('product', 'categories'));
 }
 
 

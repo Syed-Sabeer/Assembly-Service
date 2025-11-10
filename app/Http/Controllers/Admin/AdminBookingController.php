@@ -23,7 +23,7 @@ class AdminBookingController extends Controller
         $statusFilter = $request->get('status', '');
         $dateFrom = $request->get('date_from', '');
         $dateTo = $request->get('date_to', '');
-        $perPage = $request->get('per_page', 15);
+        $perPage = $request->get('per_page', 20);
 
         // Start query
         $query = Booking::with(['user', 'product', 'bookingStatuses.technician']);
@@ -158,7 +158,7 @@ class AdminBookingController extends Controller
             'rejected' => $processedBookings->where('status', 'rejected')->count(),
         ];
 
-        return view('admin.crud.bookings.index', compact('paginatedBookings', 'stats', 'search', 'statusFilter', 'dateFrom', 'dateTo', 'perPage'));
+        return view('crud.bookings.index', compact('paginatedBookings', 'stats', 'search', 'statusFilter', 'dateFrom', 'dateTo', 'perPage'));
     }
 
     /**
@@ -175,7 +175,7 @@ class AdminBookingController extends Controller
         // Get complete status history with technician relationship
         $statusHistory = $booking->bookingStatuses()->with('technician')->orderBy('created_at', 'asc')->get();
         
-        return view('admin.crud.bookings.show', compact('booking', 'technician', 'review', 'statusHistory', 'latestStatus'));
+        return view('crud.bookings.show', compact('booking', 'technician', 'review', 'statusHistory', 'latestStatus'));
     }
 }
 

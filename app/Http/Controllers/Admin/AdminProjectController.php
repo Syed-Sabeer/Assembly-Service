@@ -10,14 +10,38 @@ use Illuminate\Support\Facades\Log;
 
 class AdminProjectController extends Controller
 {
-     public function index()
+     public function index(Request $request)
     {
-        $projects = Project::all();
-        return view('admin.crud.projects.index', compact('projects'));
+        $search = $request->get('search', '');
+        $perPage = $request->get('per_page', 20);
+
+        // Start query
+        $query = Project::query();
+
+        // Apply search filter
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+        }
+
+        // Get all projects for statistics
+        $allProjects = Project::all();
+        
+        // Calculate statistics
+        $stats = [
+            'total' => $allProjects->count(),
+        ];
+
+        // Paginate results
+        $projects = $query->latest()->paginate($perPage);
+
+        return view('crud.projects.index', compact('projects', 'stats', 'search'));
     }
     public function add()
     {
-        return view('admin.crud.projects.add');
+        return view('crud.projects.add');
     }
 
     public function store(Request $request)
@@ -64,7 +88,7 @@ class AdminProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $categories = Category::all();
-        return view('admin.crud.projects.edit', compact('project','categories'));
+        return view('crud.projects.edit', compact('project','categories'));
     }
 
     // Handle update

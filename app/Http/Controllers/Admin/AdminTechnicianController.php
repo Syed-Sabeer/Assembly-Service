@@ -16,10 +16,43 @@ class AdminTechnicianController extends Controller
     /**
      * Display a listing of all technicians
      */
-    public function index()
+    public function index(Request $request)
     {
-        $technicians = TechnicianProfile::with('user')->get();
-        return view('admin.crud.technicians.index', compact('technicians'));
+        $search = $request->get('search', '');
+        $statusFilter = $request->get('status', '');
+        $perPage = $request->get('per_page', 20);
+
+        // Start query
+        $query = TechnicianProfile::with('user');
+
+        // Apply search filter
+        if ($search) {
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            })->orWhere('job_title', 'like', "%{$search}%");
+        }
+
+        // Apply status filter
+        if ($statusFilter !== '') {
+            $query->where('is_approved', $statusFilter);
+        }
+
+        // Get all technicians for statistics
+        $allTechnicians = TechnicianProfile::with('user')->get();
+        
+        // Calculate statistics
+        $stats = [
+            'total' => $allTechnicians->count(),
+            'pending' => $allTechnicians->where('is_approved', 0)->count(),
+            'approved' => $allTechnicians->where('is_approved', 1)->count(),
+            'rejected' => $allTechnicians->where('is_approved', 2)->count(),
+        ];
+
+        // Paginate results
+        $technicians = $query->latest()->paginate($perPage);
+
+        return view('crud.technicians.index', compact('technicians', 'stats', 'search', 'statusFilter'));
     }
 
     /**
@@ -28,7 +61,7 @@ class AdminTechnicianController extends Controller
     public function show($id)
     {
         $technician = TechnicianProfile::with('user')->findOrFail($id);
-        return view('admin.crud.technicians.show', compact('technician'));
+        return view('crud.technicians.show', compact('technician'));
     }
 
     /**

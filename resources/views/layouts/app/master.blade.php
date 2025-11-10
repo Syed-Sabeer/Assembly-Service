@@ -6,7 +6,15 @@
     @include('layouts.app.meta')
     @include('layouts.app.css')
     @yield('css')
-
+    <!-- Apply theme immediately to prevent flash -->
+    <script>
+        (function() {
+            if (localStorage.getItem("dark")) {
+                document.documentElement.classList.add("dark-only");
+                document.body.classList.add("dark-only");
+            }
+        })();
+    </script>
 </head>
 
 <body>

@@ -178,28 +178,41 @@
 										<span class="text-two">SIGN UP <i><img src="{{asset('FrontendAssets/images/icons/arrow-1.svg')}}" alt="" /></i></span>
 									</span>
 								</a>
-								<a class="theme-btn btn-style-three"  onclick="openModal()" >
+                                <a class="theme-btn btn-style-three"  onclick="openModal()" >
 									<span class="btn-wrap">
 										<span class="text-one">GET A QUOTE <i><img src="{{asset('FrontendAssets/images/icons/arrow-1.svg')}}" alt="" /></i></span>
 										<span class="text-two">GET A QUOTE <i><img src="{{asset('FrontendAssets/images/icons/arrow-1.svg')}}" alt="" /></i></span>
 									</span>
 								</a>
+								
 							</div>
 							@endguest
 
 							@auth
 							<div class="userDropdown">
-                            <!-- User Dropdown Button -->
-                            <button class="user-button" id="userButton">
-                                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
-                                <span class="user-name">{{ auth()->user()->name ?? 'User' }}</span>
-                                <svg class="dropdown-arrow" id="dropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
+								<!-- Button Box -->
+								<div class="main-header_button">
+									
 
-                            <!-- Dropdown Menu -->
-                            <div class="dropdown-menu" id="dropdownMenu">
+									<a class="theme-btn btn-style-three" onclick="openModal()">
+										<span class="btn-wrap">
+											<span class="text-one">GET A QUOTE <i><img src="{{asset('FrontendAssets/images/icons/arrow-1.svg')}}" alt="" /></i></span>
+											<span class="text-two">GET A QUOTE <i><img src="{{asset('FrontendAssets/images/icons/arrow-1.svg')}}" alt="" /></i></span>
+										</span>
+									</a>
+
+                                    <!-- User Dropdown Button -->
+									<button class="user-button" id="userButton">
+										<div class="user-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
+										<span class="user-name">{{ auth()->user()->name ?? 'User' }}</span>
+										<svg class="dropdown-arrow" id="dropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+										</svg>
+									</button>
+								</div>
+
+								<!-- Dropdown Menu -->
+								<div class="dropdown-menu" id="dropdownMenu">
                                 @php
                                     $user = auth()->user();
                                     $isIndividual = false;
@@ -382,7 +395,7 @@
 
                     <!-- Technician Form -->
                     <div id="technicianForm2025" class="tab-content">
-                        <form onsubmit="handleSignupSubmit2025(event, 'technician')" method="POST" action="{{ route('register.attempt') }}">
+                        <form onsubmit="handleSignupSubmit2025(event, 'technician')" method="POST" action="{{ route('register.attempt') }}" enctype="multipart/form-data">
                         @csrf
                           <input type="hidden" name="is_technician" value="1">
                             <div class="form-group">
@@ -451,8 +464,31 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="techDocuments2025">Legal Documents / Resume</label>
-                                <input type="file" id="techDocuments2025" accept=".pdf,.doc,.docx" required>
+                                <label for="techDocuments2025" style="display: flex; align-items: center; gap: 8px;">
+                                    Legal Documents / Resume <span style="color: red;">*</span>
+                                    <div class="info-box-wrapper" style="position: relative; display: inline-block; z-index: 10001;">
+                                        <i class="fas fa-info-circle" id="insuranceInfoIcon" style="color: #3375d1; cursor: pointer; font-size: 16px; transition: color 0.2s;" onmouseenter="this.style.color='#2563eb'; showInsuranceInfo()" onmouseleave="this.style.color='#3375d1';" onclick="toggleInsuranceInfo()"></i>
+                                        <div id="insuranceInfoBox" class="insurance-info-box" style="display: none; position: fixed; width: 350px; max-width: 90vw; background: #ffffff; border: 2px solid #3375d1; border-radius: 10px; padding: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 99999; font-size: 13px; line-height: 1.7; pointer-events: auto;" onmouseenter="showInsuranceInfo()" onmouseleave="setTimeout(() => hideInsuranceInfo(), 300);">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
+                                                <strong style="color: #1a1a1a; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                                                    <i class="fas fa-shield-alt" style="color: #3375d1;"></i>
+                                                    Insurance Requirement
+                                                </strong>
+                                                <button onclick="hideInsuranceInfo()" style="background: none; border: none; color: #999; cursor: pointer; font-size: 20px; padding: 0; line-height: 1; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#f0f0f0'; this.style.color='#333';" onmouseleave="this.style.background='none'; this.style.color='#999';" title="Close">&times;</button>
+                                            </div>
+                                            <div style="color: #555;">
+                                                <p style="margin: 0 0 12px 0;">
+                                                    All technicians must maintain <strong style="color: #1a1a1a;">General Liability Insurance</strong> with coverage limits of at least <strong style="color: #3375d1;">$300,000–$1,000,000</strong> per claim and an annual aggregate limit of <strong style="color: #3375d1;">$300,000–$2,000,000</strong>.
+                                                </p>
+                                                <p style="margin: 0; padding-top: 10px; border-top: 1px solid #f0f0f0;">
+                                                    Please upload a valid <strong style="color: #1a1a1a;">Certificate of Insurance (COI)</strong> as proof of coverage to complete your registration.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <input type="file" id="techDocuments2025" name="resume" accept=".pdf,.doc,.docx" required>
+                                <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 5px;">Please upload your resume or legal documents (PDF, DOC, or DOCX format)</small>
                             </div>
 
                             <div class="form-group">
@@ -1081,4 +1117,146 @@ function handleQuoteSubmit(event) {
         }
     });
 }
+
+// Insurance Info Box Functions
+function toggleInsuranceInfo() {
+    const infoBox = document.getElementById('insuranceInfoBox');
+    const infoIcon = document.getElementById('insuranceInfoIcon');
+    if (infoBox && infoIcon) {
+        const isVisible = infoBox.style.display === 'block';
+        if (isVisible) {
+            hideInsuranceInfo();
+        } else {
+            showInsuranceInfo();
+        }
+    }
+}
+
+function showInsuranceInfo() {
+    const infoBox = document.getElementById('insuranceInfoBox');
+    const infoIcon = document.getElementById('insuranceInfoIcon');
+    if (infoBox && infoIcon) {
+        // Get icon position
+        const iconRect = infoIcon.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        
+        // Position the box below and to the left of the icon
+        infoBox.style.display = 'block';
+        infoBox.style.top = (iconRect.bottom + scrollTop + 8) + 'px';
+        infoBox.style.left = (iconRect.left + scrollLeft - 280) + 'px';
+        
+        // Adjust if too far right
+        const boxRect = infoBox.getBoundingClientRect();
+        if (boxRect.right > window.innerWidth - 20) {
+            infoBox.style.left = (window.innerWidth - boxRect.width - 20) + 'px';
+        }
+        
+        // Adjust if too far left
+        if (boxRect.left < 20) {
+            infoBox.style.left = '20px';
+        }
+        
+        // Adjust if too far down
+        if (boxRect.bottom > window.innerHeight - 20) {
+            infoBox.style.top = (iconRect.top + scrollTop - boxRect.height - 8) + 'px';
+        }
+    }
+}
+
+function hideInsuranceInfo() {
+    const infoBox = document.getElementById('insuranceInfoBox');
+    if (infoBox) {
+        infoBox.style.display = 'none';
+    }
+}
+
+// Close info box when clicking outside
+document.addEventListener('click', function(event) {
+    const infoBox = document.getElementById('insuranceInfoBox');
+    const infoIcon = document.getElementById('insuranceInfoIcon');
+    const infoBoxWrapper = event.target.closest('.info-box-wrapper');
+    
+    if (infoBox && !infoIcon?.contains(event.target) && !infoBoxWrapper?.contains(event.target) && !infoBox.contains(event.target)) {
+        hideInsuranceInfo();
+    }
+});
 </script>
+
+<style>
+.insurance-info-box {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.insurance-info-box::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #3375d1;
+}
+
+.insurance-info-box::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff;
+}
+
+.dark-only .insurance-info-box {
+    background: #1e293b !important;
+    border-color: #4c1d95 !important;
+    color: #e2e8f0 !important;
+}
+
+.dark-only .insurance-info-box::after {
+    border-bottom-color: #1e293b !important;
+}
+
+.dark-only .insurance-info-box::before {
+    border-bottom-color: #4c1d95 !important;
+}
+
+.dark-only .insurance-info-box strong {
+    color: #ffffff !important;
+}
+
+.dark-only .insurance-info-box p {
+    color: #cbd5e1 !important;
+}
+
+.dark-only .insurance-info-box button {
+    color: #94a3b8 !important;
+}
+
+.dark-only .insurance-info-box button:hover {
+    background: #334155 !important;
+    color: #ffffff !important;
+}
+
+/* Ensure it's visible above modals */
+#insuranceInfoBox {
+    position: fixed !important;
+    z-index: 99999 !important;
+}
+</style>
