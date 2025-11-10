@@ -533,10 +533,10 @@
 			<div class="outer-container">
 				<div class="clearfix">
 					<!-- Left Box -->
-					<div class="left-box" style="background-image: url({{asset('FrontendAssets/images/resource/assembly.jpg')}})">
+					<div class="left-box">
 						<div class="left-box_inner">
 							<div class="fluid-one_image">
-								<img src="{{asset('FrontendAssets/images/resource/assembly.jpg')}} " alt="" />
+								<img src="{{asset('FrontendAssets/images/resource/assembly.jpg')}}" alt="Assembly Services Team" />
 							</div>
 						</div>
 					</div>
