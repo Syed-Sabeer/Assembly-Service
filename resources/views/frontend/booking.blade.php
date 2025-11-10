@@ -506,7 +506,8 @@
 
                     <div class="form-group">
                         <label>City <span class="required">*</span></label>
-                        <input type="text" id="city" name="city" placeholder="Your City" required>
+                        <input type="text" id="installation_city" name="installation_city" placeholder="Your City" required autocomplete="address-level2">
+                        <small id="installation_city-error" style="color: #dc3545; display: none; margin-top: 5px;"></small>
                     </div>
 
                     <div class="form-group">
@@ -696,6 +697,74 @@
         @if(isset($selectedProductId) && $selectedProductId)
             document.getElementById('product_id').value = {{ $selectedProductId }};
         @endif
+        
+        // Store form values in real-time as backup
+        const formValuesBackup = {
+            installation_city: '',
+            installation_address: '',
+            zip: '',
+            product_id: '',
+            preferred_date: '',
+            preferred_time: '',
+            notes: ''
+        };
+        
+        // Add real-time validation feedback for city field and backup values
+        const cityInputField = document.getElementById('installation_city');
+        if (cityInputField) {
+            cityInputField.addEventListener('input', function() {
+                const value = this.value;
+                formValuesBackup.installation_city = value; // Store raw value
+                const trimmedValue = value.trim();
+                const errorElement = document.getElementById('installation_city-error');
+                if (trimmedValue.length === 0) {
+                    this.style.borderColor = '#dc3545';
+                    if (errorElement) {
+                        errorElement.textContent = 'City is required';
+                        errorElement.style.display = 'block';
+                    }
+                } else {
+                    this.style.borderColor = '';
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                    }
+                }
+                console.log('City field changed - Value:', trimmedValue, 'Length:', trimmedValue.length, 'Backup stored:', formValuesBackup.installation_city);
+            });
+            
+            cityInputField.addEventListener('blur', function() {
+                const value = this.value;
+                formValuesBackup.installation_city = value; // Update backup on blur
+                const trimmedValue = value.trim();
+                console.log('City field blurred - Value:', trimmedValue, 'Length:', trimmedValue.length, 'Backup:', formValuesBackup.installation_city);
+                if (trimmedValue.length === 0) {
+                    this.style.borderColor = '#dc3545';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+        }
+        
+        // Backup other form fields too
+        const installationAddressInput = document.getElementById('installation_address');
+        if (installationAddressInput) {
+            installationAddressInput.addEventListener('input', function() {
+                formValuesBackup.installation_address = this.value;
+            });
+            installationAddressInput.addEventListener('blur', function() {
+                formValuesBackup.installation_address = this.value;
+            });
+        }
+        
+        const zipInput = document.getElementById('zip');
+        if (zipInput) {
+            zipInput.addEventListener('input', function() {
+                formValuesBackup.zip = this.value;
+            });
+            zipInput.addEventListener('blur', function() {
+                formValuesBackup.zip = this.value;
+            });
+        }
 
         // Step 1: Form Submission
         bookingForm.addEventListener('submit', function(e) {
@@ -711,15 +780,103 @@
                 return false;
             @endif
             
+            // Get form elements FIRST before any validation
+            const cityInput = document.getElementById('installation_city');
+            const installationAddressInput = document.getElementById('installation_address');
+            const zipInput = document.getElementById('zip');
+            const productSelect = document.getElementById('product_id');
+            const preferredDateInput = document.getElementById('preferred_date');
+            const preferredTimeSelect = document.getElementById('preferred_time');
+            const notesTextarea = document.getElementById('notes');
+            
+            // Check if elements exist
+            if (!cityInput || !installationAddressInput || !zipInput) {
+                console.error('Form elements not found');
+                console.error('City input:', cityInput);
+                console.error('Installation address input:', installationAddressInput);
+                console.error('ZIP input:', zipInput);
+                alert('Form error: Please refresh the page and try again.');
+                return false;
+            }
+            
+            // Get the city value - use backup first, then input value
+            const cityRawValue = formValuesBackup.installation_city || cityInput.value || '';
+            const cityValue = String(cityRawValue).trim();
+            
+            console.log('City backup value:', formValuesBackup.installation_city);
+            console.log('City input value:', cityInput.value);
+            console.log('Final city value used:', cityValue);
+            
+            // Use backup values if input values are empty
+            const installationAddressRawValue = formValuesBackup.installation_address || installationAddressInput.value || '';
+            const installationAddressValue = installationAddressRawValue.trim();
+            const zipRawValue = formValuesBackup.zip || zipInput.value || '';
+            const zipValue = zipRawValue.trim();
+            
+            // Debug logging
+            console.log('=== FORM SUBMISSION DEBUG ===');
+            console.log('City raw value:', cityRawValue);
+            console.log('City trimmed value:', cityValue);
+            console.log('City value length:', cityValue.length);
+            console.log('Installation Address:', installationAddressValue);
+            console.log('ZIP:', zipValue);
+            console.log('=== END DEBUG ===');
+            
+            // Check HTML5 validation AFTER we've captured the values
+            if (!bookingForm.checkValidity()) {
+                console.log('HTML5 validation failed');
+                bookingForm.reportValidity();
+                return false;
+            }
+            
+            // Validate required fields with better error messages
+            if (cityValue === '' || cityValue.length === 0) {
+                alert('Please enter a city name.');
+                cityInput.focus();
+                cityInput.style.borderColor = '#dc3545';
+                setTimeout(() => {
+                    cityInput.style.borderColor = '';
+                }, 3000);
+                return false;
+            }
+            
+            if (installationAddressValue === '' || installationAddressValue.length === 0) {
+                alert('Please enter an installation address.');
+                installationAddressInput.focus();
+                installationAddressInput.style.borderColor = '#dc3545';
+                setTimeout(() => {
+                    installationAddressInput.style.borderColor = '';
+                }, 3000);
+                return false;
+            }
+            
+            if (zipValue === '' || zipValue.length === 0) {
+                alert('Please enter a ZIP code.');
+                zipInput.focus();
+                zipInput.style.borderColor = '#dc3545';
+                setTimeout(() => {
+                    zipInput.style.borderColor = '';
+                }, 3000);
+                return false;
+            }
+            
+            // Reset border colors if validation passes
+            cityInput.style.borderColor = '';
+            installationAddressInput.style.borderColor = '';
+            zipInput.style.borderColor = '';
+            
+            // Store booking data
             bookingData = {
-                product_id: document.getElementById('product_id').value,
-                installation_address: document.getElementById('installation_address').value,
-                city: document.getElementById('city').value,
-                zip: document.getElementById('zip').value,
-                preferred_date: document.getElementById('preferred_date').value,
-                preferred_time: document.getElementById('preferred_time').value,
-                notes: document.getElementById('notes').value
+                product_id: productSelect ? productSelect.value : '',
+                installation_address: installationAddressValue,
+                installation_city: cityValue,
+                zip: zipValue,
+                preferred_date: preferredDateInput ? preferredDateInput.value : '',
+                preferred_time: preferredTimeSelect ? preferredTimeSelect.value : '',
+                notes: notesTextarea ? (notesTextarea.value || '').trim() : ''
             };
+            
+            console.log('Booking data stored:', bookingData);
 
             goToStep(2);
         });
@@ -916,7 +1073,7 @@
                     </div>
                     ` : ''}
                     <div class="checkout-summary-item">
-                        <span><strong>Installation Address:</strong> ${bookingData.installation_address}, ${bookingData.city}, ${bookingData.zip}</span>
+                        <span><strong>Installation Address:</strong> ${bookingData.installation_address}, ${bookingData.installation_city}, ${bookingData.zip}</span>
                     </div>
                     <div class="checkout-summary-item">
                         <span><strong>Date:</strong> ${bookingData.preferred_date}</span>
@@ -1012,7 +1169,7 @@
                         product_id: bookingData.product_id,
                         technician_id: selectedTechnicianId,
                         installation_address: bookingData.installation_address,
-                        city: bookingData.city,
+                            installation_city: bookingData.installation_city,
                         zip: bookingData.zip,
                         preferred_date: bookingData.preferred_date,
                         preferred_time: bookingData.preferred_time,
@@ -1045,6 +1202,19 @@
                 }
                 
                 if (paymentIntent.status === 'succeeded') {
+                    // Validate booking data before sending confirmation
+                    if (!bookingData.installation_city || !bookingData.installation_city.trim()) {
+                        throw new Error('City is required. Please go back and fill in all required fields.');
+                    }
+                    
+                    if (!bookingData.installation_address || !bookingData.installation_address.trim()) {
+                        throw new Error('Installation address is required. Please go back and fill in all required fields.');
+                    }
+                    
+                    if (!bookingData.zip || !bookingData.zip.trim()) {
+                        throw new Error('ZIP code is required. Please go back and fill in all required fields.');
+                    }
+                    
                     // Payment succeeded, confirm booking
                     const confirmResponse = await fetch('{{ route("booking.confirm") }}', {
                         method: 'POST',
@@ -1057,12 +1227,12 @@
                             payment_intent_id: data.payment_intent_id,
                             product_id: bookingData.product_id,
                             technician_id: selectedTechnicianId,
-                            installation_address: bookingData.installation_address,
-                            city: bookingData.city,
-                            zip: bookingData.zip,
+                            installation_address: bookingData.installation_address.trim(),
+                            installation_city: bookingData.installation_city.trim(),
+                            zip: bookingData.zip.trim(),
                             preferred_date: bookingData.preferred_date,
                             preferred_time: bookingData.preferred_time,
-                            notes: bookingData.notes,
+                            notes: (bookingData.notes || '').trim(),
                             amount: bookingData.amount,
                             payment_method: 'stripe',
                         })

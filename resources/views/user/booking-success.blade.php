@@ -8,6 +8,9 @@
     .dashboard-header-premium {
         animation: fadeInDown 0.6s ease-out;
     }
+    .main-header {
+        top: -124px;
+        }
     
     @keyframes fadeInDown {
         from {

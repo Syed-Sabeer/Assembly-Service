@@ -6,6 +6,9 @@
 
 @section('css')
 <style>
+      .main-header {
+        top: -124px;
+        }
     /* Dashboard Header Premium Styles */
     .dashboard-header-premium {
         animation: fadeInDown 0.6s ease-out;
@@ -786,7 +789,7 @@
         document.head.appendChild(style);
     </script>
 
-
+<script>
         // Initialize the map with San Francisco coordinates
         const map = L.map('map').setView([37.7599, -122.4148], 16);
 
